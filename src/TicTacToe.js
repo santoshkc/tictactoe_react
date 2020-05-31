@@ -11,6 +11,19 @@ export default class TicTacToeGame extends React.Component {
             }],
             isNextX : true,
             stepNumber: 0,
+            winnerSquares : []
+        }
+    }
+
+    getWinnerSquaresJsx() {
+        if(this.state.winnerSquares && this.state.winnerSquares.length) {
+            return (<div>
+                Winning Moves: {this.state.winnerSquares.join(',')}
+            </div>);
+        }
+        else
+        {
+            return (<div />);
         }
     }
 
@@ -28,7 +41,18 @@ export default class TicTacToeGame extends React.Component {
                     return `${x},${y}`;
             });
 
-        const status = this.getStatus(squares);
+        const winner = this.getWinner(squares);
+
+        let getStatus = () => {
+    
+            if(winner.winnerMove) {
+                return 'Winner: ' + winner.winnerMove;
+            } else {
+                return 'Next Move: ' + (this.state.isNextX ? 'X' : 'O');
+            }
+        }
+
+        let status = getStatus();
 
         const moves = history.reverse().map((step, move) => {
             let index = history.length - 1 - move;
@@ -37,7 +61,9 @@ export default class TicTacToeGame extends React.Component {
               'Go to game start';
             return (
               <li key={index}>
-                <button onClick={() => this.jumpTo(index)}>{desc}</button>
+                <button onClick={() => {
+                    this.jumpTo(index);
+                }}>{desc}</button>
               </li>
             );
           });
@@ -46,11 +72,12 @@ export default class TicTacToeGame extends React.Component {
             <div className = 'game'>
                 <h1>Welcome to Tic Tac Toe</h1>
                 <div className = 'game-board'>
-                    <Board squares = {squares} onClick = {(row,column) => this.clickHandler(row,column)}/>
+                    <Board squares = {squares} winnerSquares = {winner.winnerSquares} onClick = {(row,column) => this.clickHandler(row,column)}/>
                 </div>
                 <div className = 'game-info'>
                     <div>{status}</div>
                     <div>Last move: <strong>{lastMove}</strong></div>
+                    <strong>{this.getWinnerSquaresJsx()}</strong>
                     <ol>{moves}</ol>
                 </div>
                 <h3>Have Nice Game!!</h3>
@@ -59,9 +86,20 @@ export default class TicTacToeGame extends React.Component {
     }
 
     jumpTo(move) {
+
+        const stepNumber = move;
+
+        const squares = this.state.history[stepNumber].squares;
+        let winnerInfo = this.getWinner(squares);
+        let winnerSquares = [];
+        if(winnerInfo.winnerSquares && winnerInfo.winnerSquares.length > 0) {
+            winnerSquares = winnerInfo.winnerSquares;
+        }
+
         this.setState({
             isNextX : move % 2, 
-            stepNumber : move
+            stepNumber : stepNumber,
+            winnerSquares: winnerInfo.winnerSquares
         });
     }
 
@@ -75,7 +113,9 @@ export default class TicTacToeGame extends React.Component {
 
         let squares = current.squares.slice();
 
-        if(squares[index] || this.getWinner(squares) )
+        const winner = this.getWinner(squares);
+
+        if(squares[index] || winner.winnerMove )
             return;
 
         squares[index] = this.state.isNextX ? 'X' : 'O';
@@ -87,19 +127,12 @@ export default class TicTacToeGame extends React.Component {
                 clickedCell : [row,column]
             }]),
              isNextX : !this.state.isNextX,
-            stepNumber : history.length
+            stepNumber : history.length,
+            winnerSquares : this.getWinner(squares).winnerSquares,
         });
     }
 
-    getStatus = (squares) => {
-        let winner = this.getWinner(squares);
-
-        if(winner) {
-            return 'Winner: ' + winner;
-        } else {
-            return 'Next Move: ' + (this.state.isNextX ? 'X' : 'O');
-        }
-    }
+    
 
     getWinner = (squares) => {
         const winnerCases =  [
@@ -119,9 +152,15 @@ export default class TicTacToeGame extends React.Component {
 
             if(squares[x] && squares[x] === squares[y]
                 && squares[x] === squares[z])
-                    return squares[x];
+                    return {
+                        winnerMove: squares[x],
+                        winnerSquares: [x,y,z]
+                    };
         }
-        return null;
+        return {
+            winnerMove: null,
+            winnerSquares: []
+        };
     }
 }
 
@@ -132,8 +171,12 @@ class Board extends React.Component {
         const SizeOfGrid = 3;
 
         let i = row * SizeOfGrid + column;
+
+        let highlight = this.props.winnerSquares.includes(i);
+
         return (
-            <Square value = {this.props.squares[i]} onClick = {() => {this.props.onClick(row,column);}}/>
+            <Square value = {this.props.squares[i]} highlight = {highlight} 
+                onClick = {() => {this.props.onClick(row,column);}}/>
         );
     }
 
@@ -163,6 +206,15 @@ class Board extends React.Component {
 
 function Square(props) {
     return (
-        <button class = 'buttonName' onClick = {props.onClick} ><strong>{props.value}</strong></button>
+    <button class = 'buttonName' onClick = {props.onClick} >{boldSquare(props)}</button>
     );
+
+    function boldSquare(props) {
+        if ( props.highlight) {
+            return <strong>{props.value}</strong>
+
+        } else {
+            return props.value
+        }
+    }
 }

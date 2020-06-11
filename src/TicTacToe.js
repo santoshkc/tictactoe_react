@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDom from 'react-dom';
+import "bootstrap/dist/css/bootstrap.css"
 
 export default class TicTacToeGame extends React.Component {
     constructor(props) {
@@ -69,14 +70,14 @@ export default class TicTacToeGame extends React.Component {
           });
 
         return (
-            <div className = 'game'>
-                <h1>Welcome to Tic Tac Toe</h1>
-                <div className = 'game-board'>
+            <div className = "container-fluid">
+                <h1 className = "bg-primary text-center text-white p-2">Welcome to Tic Tac Toe</h1>
+                <div className = "bg-secondary">
                     <Board squares = {squares} winnerSquares = {winner.winnerSquares} onClick = {(row,column) => this.clickHandler(row,column)}/>
                 </div>
-                <div className = 'game-info'>
-                    <div>{status}</div>
-                    <div>Last move: <strong>{lastMove}</strong></div>
+                <div className = "bg-info bordered m-2">
+                    <div className = "row m-1">{status}</div>
+                    <div className = "row m-1">Last move: <strong>{lastMove}</strong></div>
                     <strong>{this.getWinnerSquaresJsx()}</strong>
                     <ol>{moves}</ol>
                 </div>
@@ -186,11 +187,11 @@ class Board extends React.Component {
         //let numbers = Array(3).fill(Array(3).keys());
 
         return (
-                <div id = 'board'>
+                <div className = "container" id = 'board'>
                     {
                         numbers.map((value,index) => {
                             return (
-                                <div id = {`div${index + 1}`}>
+                                <div className = "row m-1" id = {`div${index + 1}`}>
                                     {
                                         value.map((item,index2) => {
                                             return (this.renderSquare(index,index2));
@@ -206,7 +207,7 @@ class Board extends React.Component {
 
 function Square(props) {
     return (
-    <button class = 'buttonName' onClick = {props.onClick} >{boldSquare(props)}</button>
+    <button className = "col-1 btn btn-info p-1 m-2" onClick = {props.onClick} >{boldSquare(props)}</button>
     );
 
     function boldSquare(props) {

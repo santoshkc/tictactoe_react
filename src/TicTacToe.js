@@ -70,18 +70,25 @@ export default class TicTacToeGame extends React.Component {
           });
 
         return (
-            <div className = "container-fluid">
-                <h1 className = "bg-primary text-center text-white p-2">Welcome to Tic Tac Toe</h1>
-                <div className = "bg-secondary">
-                    <Board squares = {squares} winnerSquares = {winner.winnerSquares} onClick = {(row,column) => this.clickHandler(row,column)}/>
+            <div>
+                <div className = "row">
+                    <h1 className = "col bg-primary text-center text-white">Welcome to Tic Tac Toe</h1>
                 </div>
-                <div className = "bg-info bordered m-2">
-                    <div className = "row m-1">{status}</div>
-                    <div className = "row m-1">Last move: <strong>{lastMove}</strong></div>
-                    <strong>{this.getWinnerSquaresJsx()}</strong>
-                    <ol>{moves}</ol>
+                <div className = "bg-secondary row mt-1">
+                    <Board squares = {squares} winnerSquares = {winner.winnerSquares} 
+                            onClick = {(row,column) => this.clickHandler(row,column)}/>
+                    <div className = "col bg-info bordered">
+                        <div className = "row m-1">{status}</div>
+                        <div className = "row m-1">Last move: <strong>{lastMove}</strong></div>
+                        <strong>{this.getWinnerSquaresJsx()}</strong>
+                        <div className = "row">
+                            <ol>{moves}</ol>
+                        </div>
+                    </div>
                 </div>
-                <h3>Have Nice Game!!</h3>
+                <div className = "row mt-2">
+                    <h3 className = "col text-left bg-info">Have Nice Game!!</h3>
+                </div>
             </div>
         );
     }
@@ -187,7 +194,7 @@ class Board extends React.Component {
         //let numbers = Array(3).fill(Array(3).keys());
 
         return (
-                <div className = "container" id = 'board'>
+                <div className = "container col-2 m-1" id = 'board'>
                     {
                         numbers.map((value,index) => {
                             return (
@@ -206,8 +213,13 @@ class Board extends React.Component {
 }
 
 function Square(props) {
+    const style = {
+        width : "40px",
+        height : "40px"
+    }
+
     return (
-    <button className = "col-1 btn btn-info p-1 m-2" onClick = {props.onClick} >{boldSquare(props)}</button>
+        <button style = {style} className = "btn btn-light m-2" onClick = {props.onClick} >{boldSquare(props)}</button>
     );
 
     function boldSquare(props) {
